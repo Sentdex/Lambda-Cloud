@@ -7,7 +7,6 @@ either copy over the llm-setup.sh file or:
 `$ nano llm-setup.sh`
 
 ```
-
 #!/bin/bash
 sudo pip3 install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 sudo pip3 install --upgrade huggingface-hub
