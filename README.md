@@ -23,3 +23,8 @@ export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 
 `$./setup.sh`
+
+# .env file
+
+You may not need everything included in the example. `LAMBDA_KEY` is your Lambda cloud API key, which allows you to spin up, check, terminate...etc instances. `LAMBDA_SSH_KEY_NAME` is the name of your ssh key file on Lambda cloud, so the API knows which key to associate with an instance you spin up. Finally `HF_AUTH` is used for any LLM that you may wish to DL/use on Lambda that requires authorization to use. 
+
