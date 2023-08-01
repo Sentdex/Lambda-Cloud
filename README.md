@@ -3,6 +3,7 @@ Helpers and such for working with Lambda Cloud.
 
 # Setup process for a new instance:
 either copy over the llm-setup.sh file or:
+
 `$ nano llm-setup.sh`
 
 ```
