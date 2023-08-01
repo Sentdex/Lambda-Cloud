@@ -19,4 +19,5 @@ export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 ```
 
 `$ chmod +x setup.sh`
+
 `$./setup.sh`
