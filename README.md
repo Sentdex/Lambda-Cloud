@@ -24,10 +24,13 @@ export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 `$./setup.sh`
 
-# .env file
+# `.env` file
 
 You may not need everything included in the example. 
 1. `LAMBDA_KEY` is your Lambda cloud API key, which allows you to spin up, check, terminate...etc instances. 
 2. `LAMBDA_SSH_KEY_NAME` is the name of your ssh key file on Lambda cloud, so the API knows which key to associate with an instance you spin up.
-3. `HF_AUTH` is used for any LLM that you may wish to DL/use on Lambda that requires authorization to use. 
+3. `HF_AUTH` is used for any LLM that you may wish to DL/use on Lambda that requires authorization to use.
+
+# `lambda_api_helpers.py`
+Fairly dirty, but gets the job done of some of the tasks I've wanted to do so far.
 
