@@ -17,3 +17,6 @@ sudo pip3 install flask
 sudo pip3 install python-dotenv
 export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 ```
+
+`$ chmod +x setup.sh`
+`$./setup.sh`
