@@ -4,8 +4,11 @@ from dotenv import load_dotenv
 import os
 import requests
 from requests.auth import HTTPBasicAuth
+import colorama
 from colorama import Fore, Style
 import time
+
+colorama.init()
 
 # load .env file
 load_dotenv()
