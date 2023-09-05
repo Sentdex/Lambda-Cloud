@@ -6,6 +6,10 @@ import requests
 from requests.auth import HTTPBasicAuth
 from colorama import Fore, Style
 import time
+import colorama
+
+
+colorama.init()
 
 # load .env file
 load_dotenv()
