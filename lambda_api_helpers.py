@@ -4,11 +4,8 @@ from dotenv import load_dotenv
 import os
 import requests
 from requests.auth import HTTPBasicAuth
-import colorama
 from colorama import Fore, Style
 import time
-
-colorama.init()
 
 # load .env file
 load_dotenv()
@@ -75,58 +72,63 @@ def get_instance_types():
     return data, available_instances
 
 
-def attempt_instance(target_name):
+def attempt_instance(target_names, demo=False):
     data, available_instances = get_instance_types()
     print(available_instances)
 
-    if any(instance['instance_type']['name'] == target_name for instance in available_instances):
-        # print found in bold green
-        print(f"{Fore.GREEN}{Style.BRIGHT}{target_name} found!{Style.RESET_ALL}")
+    # Loop through each target name to see if it's available
+    for target_name in target_names:
+        if any(instance['instance_type']['name'] == target_name for instance in available_instances):
+            print(f"{Fore.GREEN}{Style.BRIGHT}{target_name} found!{Style.RESET_ALL}")
 
-        # Find the instance in the available instances list
-        instance_data = next((instance for instance in available_instances if instance['instance_type']['name'] == target_name), None)
+            instance_data = next((instance for instance in available_instances if instance['instance_type']['name'] == target_name), None)
+            region_name = instance_data['regions_with_capacity_available'][0]['name'] if instance_data else None
 
-        # Extract the region name
-        region_name = instance_data['regions_with_capacity_available'][0]['name'] if instance_data else None
+            if demo:
+                data = {
+                    'region_name': region_name,
+                    'instance_type_name': target_name,
+                    'ssh_key_names': [ssh_key_name],
+                    'demo_name': demo
+                }
+            else:
+                data = {
+                    'region_name': region_name,
+                    'instance_type_name': target_name,
+                    'ssh_key_names': [ssh_key_name]
+                }
 
-        # Prepare the data for the POST request
-        data = {
-            'region_name': region_name,
-            'instance_type_name': target_name,
-            'ssh_key_names': [ssh_key_name]
-        }
+            endpoint = 'https://cloud.lambdalabs.com/api/v1/instance-operations/launch'
+            response = requests.post(endpoint, auth=HTTPBasicAuth(api_key, ''), json=data)
+            print(response.json())
+            print("Server spinning up... Your instances:")
+            data = query_lambda_api("https://cloud.lambdalabs.com/api/v1/instances")
+            if data:
+                print("Current instances account:", data)
 
-        # Send the POST request
-        endpoint = 'https://cloud.lambdalabs.com/api/v1/instance-operations/launch'
-        response = requests.post(endpoint, auth=HTTPBasicAuth(api_key, ''), json=data)
+            time.sleep(1)
 
-        # Print the response (you could also check response.status_code or handle the response as needed)
-        print(response.json())
-        print("Server spinning up... Your instances:")
-        data = query_lambda_api("https://cloud.lambdalabs.com/api/v1/instances")
-        if data:
-            print("Current instances account:", data)
+            return True, target_name  # Return True and the name of the found instance
 
-        return True
-        
-    else:
-        # print not found and what is available in bold red:
-        print(f"{Fore.RED}{Style.BRIGHT}{target_name} not found.{Style.RESET_ALL}")
-        return False
+    print(f"{Fore.RED}{Style.BRIGHT}None of the target instances found.{Style.RESET_ALL}")
+    return False, None  # Return False and None if no instances were found
 
 
-def snipe_instance(instance_name):
+def snipe_instance(instance_names, demo=False):
     got_a_server = False
+    found_instance_name = None
     while not got_a_server:
-        got_a_server = attempt_instance(instance_name)
-        time.sleep(1)
-        if got_a_server:
-            # list of colorama colors:
-            colors = [Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.CYAN]
-            # required for maximum impact:
-            for i in range(6):
-                print(f"{colors[i]}{Style.BRIGHT}Server found!{Style.RESET_ALL}")
-                time.sleep(0.5)
+        try:
+            got_a_server, found_instance_name = attempt_instance(instance_names, demo)
+            time.sleep(2)
+            if got_a_server:
+                colors = [Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.CYAN]
+                for i in range(6):
+                    print(f"{colors[i]}{Style.BRIGHT}Server {found_instance_name} found!{Style.RESET_ALL}")
+                    time.sleep(0.5)
+        except Exception as e:
+            print(e)
+            time.sleep(1)
 
 
 def get_my_instances():
@@ -154,9 +156,24 @@ def terminate_all_instances():
             print("Terminate request sent.")
 
 if __name__ == "__main__":
-    # Hunt for a particular instance:
-    snipe_instance("gpu_1x_h100_pcie")
-
+    # uncomment any multiple of instances that you want to hunt for at any given time.
+    snipe_instance([
+                    #"gpu_1x_a10",
+                    #"gpu_1x_a100_sxm4",
+                    #"gpu_8x_h100_sxm5",
+                    #"gpu_1x_h100_pcie",
+                    #"gpu_8x_a100_80gb_sxm4",
+                    #"gpu_1x_rtx6000",
+                    #"gpu_1x_a100",
+                    #"gpu_2x_a100",
+                    #"gpu_4x_a100",
+                    #"gpu_8x_a100",
+                    "gpu_1x_a6000",
+                    #"gpu_2x_a6000",
+                    #"gpu_4x_a6000",
+                    #"gpu_8x_v100",
+                    ])
+    
     # Get your current instances:
     #get_my_instances()
 
